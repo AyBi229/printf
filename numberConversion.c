@@ -2,20 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 /**
- * Converts an integer to a string representation.
+ * numberConversion - converts a num.
+ * @number: the integer to be converted
+ * @nDigit: the number of digits
  *
- * This function allocates memory for the string representation, converts the
- * integer to a string using snprintf, and returns the resulting string.
- *
- * @param nDigit The number of digits expected in the resulting string.
- * @param number The integer to be converted to a string.
- * @return A dynamically allocated string containing the integer as a string.
+ * Return: a string .
  */
 char *numberConversion(unsigned int nDigit, int number)
 {
-    char *str = (char *)malloc(nDigit+1);
-    if (!str) exit (1);
-    snprintf(str, nDigit+1, "%d", number);
-    return (str);
-}
+	char *str = (char *)malloc(nDigit + 1);
 
+	if (!str)
+	exit(1);
+	snprintf(str, nDigit + 1, "%d", number);
+
+	return (str);
+}
