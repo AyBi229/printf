@@ -1,16 +1,31 @@
 #include "main.h"
-#include <unistd.h>
-#include <string.h>
-#include <stdarg.h>
 /**
  * _printf - the printf function
  * @param format A format string containing text and format specifiers.
  * @param ... Variable arguments for format specifiers.
  * @return The total number of characters printed.
  */
+SpecifierMapping specifierMap[] = {
+	{'c', handleChar},
+	{'s', handleString},
+	{'d', handleInt},
+	{'i', handleInt},
+	{'u', handleInt},
+	{'%', handlePercent},
+	{'b', handleBinary},
+	{'x', handleHex},
+	{'X', handleHex},
+	{'o', handleOctal},
+	{'p', handlePointer},
+	{'r', handleReverse},
+	{'S', handlePrint_S},
+	{'R', handleRot13},
+	{0, NULL}
+};
 int _printf(const char *format, ...)
 {
-	int nChar = 0; va_list args;
+	int nChar = 0;
+	va_list args;
 
 	va_start(args, format);
 
@@ -18,50 +33,23 @@ int _printf(const char *format, ...)
 	{
 		if (format[i] != '%')
 		{
-			nChar++;
-			write(1, &format[i], 1);
+			nChar += write(1, &format[i], 1);
 		}
 		else
 		{
-			switch (format[i + 1])
+			i++;
+			for (SpecifierMapping *mapping = specifierMap;
+					mapping->specifier != 0; mapping++)
 			{
-				case 'c':
-					{
-						nChar++; char currentArg = va_arg(args, int);
-
-						write(1, &currentArg, 1);
-						break;
-					}
-				case 's':
-					{
-						char *currentArg = va_arg(args, char *);
-
-						nChar += strlen(currentArg);
-						write(1, currentArg, strlen(currentArg));
-						break;
-					}
-				case 'd':
-				case 'i':
-					{
-						int currentArg = va_arg(args, int), nDigit = digitCounter(currentArg);
-						char *str = numberConversion(nDigit, currentArg);
-
-						nChar += nDigit;
-						write(1, str, strlen(str));
-						break;
-					}
-				case '%':
-					{
-						char percent = '%';
-
-						write(1, &percent, 1);
-						break;
-					}
-				default:
+				if (format[i] == mapping->specifier)
+				{
+					mapping->handler(args, &nChar);
 					break;
+				}
 			}
 		}
 	}
+
 	va_end(args);
 	return (nChar);
 }
